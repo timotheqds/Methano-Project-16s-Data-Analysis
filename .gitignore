@@ -1,0 +1,57 @@
+# Data directories - exclude from version control
+data/raw/*
+data/processed/*
+data/results/*
+
+# Keep directory structure but ignore contents
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/results/.gitkeep
+
+# Environment variables
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Large data files (add specific extensions as needed)
+*.bam
+*.sam
+*.fastq
+*.fq
+*.gz
+*.bz2
+*.zip
+*.tar
+*.tgz
+
+# R
+.Rhistory
+.Rapp.history
+.RData
+.Ruserdata
+
+# Conda
+.conda/
