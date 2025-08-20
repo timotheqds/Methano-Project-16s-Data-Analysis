@@ -2,6 +2,7 @@
 data/raw/*
 data/processed/*
 data/results/*
+tests/*
 
 # Keep directory structure but ignore contents
 !data/raw/.gitkeep
