@@ -12,10 +12,9 @@ A customised bioinformatic pipeline for analyzing 16S rRNA amplicon sequencing d
 5. LULU Post-Clustering Curation
 6. OTU Clustering with Swarm
 7. Taxonomic Assignment (IDTAXA (& BLAST))
-8. Special Processing for Soil Samples
-9. Results Compilation & Export
-10. Quality Control & Validation
-11. Downstream Analysis Preparation
+8. Results Compilation & Export
+9. Quality Control & Validation
+10. Downstream Analysis Preparation
 
 
 ## Prerequisites
@@ -110,14 +109,7 @@ A customised bioinformatic pipeline for analyzing 16S rRNA amplicon sequencing d
 - Assign taxonomy at all taxonomic ranks (Phylum to Species)
 - Generate assignment statistics and success rates
 
-### Step 8: Special Processing for Soil Samples
-
-**Actions:**
-- Apply environment-specific filtering parameters
-- Compare soil vs. non-soil processing results
-- Generate comparative reports
-
-### Step 9: Results Compilation and Export
+### Step 8: Results Compilation and Export
 
 **Actions:**
 - Run the pipeline
@@ -133,7 +125,7 @@ A customised bioinformatic pipeline for analyzing 16S rRNA amplicon sequencing d
 - `data/results/taxonomic_composition/` - Sample-specific reports
 
 
-### Step 10: Quality Control and Validation
+### Step 9: Quality Control and Validation
 
 **Quality checks:**
 - Primer removal efficiency reports
@@ -142,7 +134,7 @@ A customised bioinformatic pipeline for analyzing 16S rRNA amplicon sequencing d
 - Sample-specific processing summaries
 - NA value analysis and reporting
 
-### Step 11: Downstream Analysis Preparation
+### Step 10: Downstream Analysis Preparation
 
 **Output preparation for:**
 - Phyloseq object creation
