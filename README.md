@@ -1,7 +1,7 @@
 # MethanoPipeline: 16S rRNA Analysis of Tree Soil, Bark, and Trunks
 
 ## Overview
-A customized bioinformatic pipeline for analyzing 16S rRNA amplicon sequencing data from tree-associated environments, built upon SimpleMetaPipeline and optimized for environmental microbiome data.
+A customised bioinformatic pipeline for analyzing 16S rRNA amplicon sequencing data from tree-associated environments, built upon SimpleMetaPipeline and optimised for environmental microbiome data.
 
 ## Structure of Research
 
