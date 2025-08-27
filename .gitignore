@@ -2,12 +2,64 @@
 data/raw/*
 data/processed/*
 data/results/*
-tests/*
+data/step_outputs/*
 
 # Keep directory structure but ignore contents
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/results/.gitkeep
+!data/step_outputs/.gitkeep
+
+# FASTQ and sequencing data files
+*.fastq
+*.fq
+*.fastq.gz
+*.fq.gz
+*.sra
+
+# Bioinformatics pipeline outputs
+*.sam
+*.bam
+*.bai
+*.vcf
+*.bcf
+*.bed
+*.gff
+*.gtf
+*.fasta
+*.fa
+*.fna
+*.ffn
+
+# Large compressed files
+*.gz
+*.bz2
+*.xz
+*.zip
+*.tar
+*.tgz
+*.tar.gz
+
+# Pipeline intermediate files
+*.trimmed
+*.filtered
+*.assembled
+*.aligned
+*.sorted
+*.dedup
+
+# Quality control outputs
+*_fastqc.html
+*_fastqc.zip
+*.qual
+*.phred
+
+# Log files from bioinformatics tools
+logs/
+*.log
+*.out
+*.err
+slurm-*.out
 
 # Environment variables
 .env
@@ -40,19 +92,46 @@ Thumbs.db
 # Large data files (add specific extensions as needed)
 *.bam
 *.sam
-*.fastq
-*.fq
-*.gz
-*.bz2
-*.zip
-*.tar
-*.tgz
 
 # R
 .Rhistory
 .Rapp.history
 .RData
 .Ruserdata
+*.Rout
+*.Rcheck/
+.Rproj.user/
+
+# R pipeline specific
+*.RData
+*.rds
+*.rda
+Rplots.pdf
 
 # Conda
 .conda/
+
+# Bioinformatics databases (if downloaded locally)
+*_db/
+*.dmnd
+*.idx
+*.bt2
+*.fmi
+
+# Temporary pipeline files
+tmp/
+temp/
+cache/
+work/
+
+# Nextflow (if used)
+.nextflow/
+.nextflow.log*
+work/
+
+# External pipelines and tools (not tracked)
+external_pipeline/
+Pipeline/
+pipelines/
+tools/
+bin/
