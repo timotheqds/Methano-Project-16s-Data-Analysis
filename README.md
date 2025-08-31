@@ -1,169 +1,268 @@
-# MethanoPipeline: 16S rRNA Analysis of Tree Soil, Bark, and Trunks
+# MethanoPipeline: 16S rRNA Analysis of Tree Soil, Bark, and Wood
 
-## Overview
-A customised bioinformatic pipeline for analyzing 16S rRNA amplicon sequencing data from tree-associated environments, built upon SimpleMetaPipeline and optimised for environmental microbiome data.
+A customised bioinformatics pipeline for analysing **16S rRNA amplicon sequencing data** from tree-associated environments (soil, bark, and wood). Built upon **SimpleMetaPipeline**, optimized for **environmental microbiome data**, and designed for reproducibility, quality control, and downstream analysis.
 
-## Structure of Research
-
-1. Project Setup & Data Preparation
-2. Quality Control & Primer Removal
-3. Read Filtering & Trimming
-4. Sequence Table Construction
-5. LULU Post-Clustering Curation
-6. OTU Clustering with Swarm
-7. Taxonomic Assignment (IDTAXA (& BLAST))
-8. Results Compilation & Export
-9. Quality Control & Validation
-10. Downstream Analysis Preparation
-
+---
 
 ## Prerequisites
 
-### Software Dependencies
-- **Conda** (Miniconda or Anaconda)
-- **R** (v4.2.0 or higher) with essential packages: dada2, phyloseq, DECIPHER, lulu
-- **Bioinformatics tools**: cutadapt, (BLAST+), swarm
-- **Reference databases**: GTDB (primary), SILVA (optional)
+### Software
 
-### Data Requirements
-- Paired-end 16S rRNA sequencing data (FASTQ format)
-- Sample metadata CSV file with: sample-id, environment, tree-species, collection-date, location
+* **Conda** (Miniconda/Anaconda)
+* **R (v4.2+)** with packages: `dada2`, `phyloseq`, `DECIPHER`, `lulu`
+* **Git**
 
-## Pipeline Execution Steps
+### Tools (via Conda)
 
-### Step 1: Environment Setup and Data Preparation
+* **cutadapt** – primer/adaptor removal
+* **fastqc** / **multiqc** – quality control
+* **swarm** – OTU clustering
+* **blast+** – fallback taxonomy assignment and LULU matchlist support
 
-**Script:** `ControlScriptMethanoProject.r` (initial configuration)
+### Databases
 
-**Actions:**
-- Validate FASTQ file integrity and naming conventions
-- Parse metadata file and match with sample files
-- Create output directory structure
-- Initialize logging system
+* **GTDB** (primary taxonomy)
+* **SILVA** (fallback taxonomy)
+* **BLAST** (final rescue for unclassified sequences)
 
+---
 
-### Step 2: Quality Control and Primer Removal
+## Data Requirements & Structure
 
-**Tools:** Cutadapt, FastQC, MultiQC
+* **Paired-end FASTQ files**: `SAMPLE_R1.fastq.gz`, `SAMPLE_R2.fastq.gz`
+* **Metadata CSV**: `data/metadata.csv` with columns
+  `sample-id, environment, tree-species, collection-date, location`
 
-**Actions:**
-- Remove primers and adapters using Cutadapt
-- Generate quality reports with FastQC
-- Aggregate QC reports with MultiQC
-- Remove reads with ambiguous bases (N)
-- Trim reads based on quality profiles
+**Example:**
 
-
-### Step 3: Read Filtering and Trimming
-
-**Tool:** DADA2
-
-**Actions:**
-- Quality-based filtering and trimming
-- Learn error rates from the data
-- Dereplication to identify unique sequences
-- Sample inference to resolve amplicon sequence variants (ASVs)
-- Merge paired-end reads
-- Remove chimeric sequences
-
-### Step 4: Sequence Table Construction
-
-**Output:** `data/processed/ASV_table.csv`
-
-**Actions:**
-- Create abundance table of ASVs across samples
-- Remove singletons and low-abundance sequences
-- Apply minimum abundance thresholds:
-  - ≥5 reads per sample
-  - ≥10 total reads across all samples
-  - ≥0.1% relative abundance
-
-### Step 5: LULU Post-Clustering Curation
-
-**Tool:** LULU algorithm
-
-**Actions:**
-- First pass: Conservative curation 
-- Second pass: Less stringent curation
-- Compare curated vs. uncurated tables
-- Generate curation statistics and reports
-
-### Step 6: OTU Clustering with Swarm
-
-**Tool:** Swarm
-
-**Actions:**
-- Single-linkage clustering with 1bp difference
-- Generate OTU table from swarm clusters
-- Validate clustering results
-- Compare ASV vs. OTU-based approaches
-
-### Step 7: Taxonomic Assignment
-
-**Tools:** IDTAXA (primary), BLAST (fallback)
-
-**Actions:**
-- Assign taxonomy using GTDB reference database
-- Use BLAST as fallback for unclassified sequences
-- Merge results from both methods
-- Assign taxonomy at all taxonomic ranks (Phylum to Species)
-- Generate assignment statistics and success rates
-
-### Step 8: Results Compilation and Export
-
-**Actions:**
-- Run the pipeline
-- Compile all processed data into final tables
-- Generate summary statistics and visualizations
-- Create interactive HTML reports
-- Export data in multiple formats for downstream analysis
-
-**Output files:**
-- `data/results/ASV_table.csv` - Final abundance table
-- `data/results/taxonomy.csv` - Taxonomic assignments
-- `data/results/sequence_processing_summary.pdf` - QC report
-- `data/results/taxonomic_composition/` - Sample-specific reports
-
-
-### Step 9: Quality Control and Validation
-
-**Quality checks:**
-- Primer removal efficiency reports
-- Read retention statistics at each step
-- Taxonomic assignment success rates
-- Sample-specific processing summaries
-- NA value analysis and reporting
-
-### Step 10: Downstream Analysis Preparation
-
-**Output preparation for:**
-- Phyloseq object creation
-- Diversity analysis (alpha and beta diversity)
-- Differential abundance testing
-- Visualization and plotting
-
-## Custom Script Execution
-
-After main pipeline completion, run additional analyses:
-
-```bash
-# NA value analysis
-Rscript scripts/summarize_NA_in_SeqDataTable.R
-
-# Interactive visualization
-Rscript scripts/visualize_Methano_SeqDataTable.R
-
-# Taxonomic composition by environment
-Rscript scripts/export_taxa_by_sampletype.R
-
-# Curated OTU analysis
-Rscript scripts/summarize_NA_curatedOTU.R
+```csv
+sample-id,environment,tree-species,collection-date,location
+A6S,soil,oak,2024-07-01,Plot1
+B6B,bark,pine,2024-07-01,Plot2
+B10W,wood,beech,2024-07-02,Plot3
 ```
 
-## Monitoring and Troubleshooting
+```
+project/
+├─ data/
+│  ├─ raw/                  # FASTQ files
+│  ├─ processed/            # Intermediate files
+│  ├─ results/              # Final outputs
+│  └─ step_outputs/         # Per-step results
+└─ logs/
+   └─ steps/                # Execution logs
+```
 
-**Log files:** `logs/pipeline_run_*.log`
-**Intermediate files:** `data/processed/` for debugging
-**Quality reports:** `data/results/quality_control/`
+---
 
-The pipeline includes comprehensive error handling and can be restarted from any step if interrupted. Each processing step generates validation checks and diagnostic output to ensure data quality throughout the analysis.
+## Pipeline Scripts (at a glance)
+
+| Step | Script                  | Purpose                                                      |
+| ---- | ----------------------- | ------------------------------------------------------------ |
+| 1    | `0.1_setup.R`           | Environment setup, metadata validation, paths                |
+| 2    | `0.2_quality_control.R` | Primer removal (cutadapt), QC reports (FastQC/MultiQC)       |
+| 3    | `0.3_filtering.R`       | Quality filtering, trimming, dereplication (DADA2)           |
+| 4    | `0.4_sequence_table.R`  | Error learning → ASV inference, merge pairs, chimera removal |
+| 5    | `0.5_lulu_curation.R`   | LULU curation (stringent + relaxed)                          |
+| 6    | `0.6_otu_clustering.R`  | Swarm OTU clustering (optional, alongside ASVs)              |
+| 7    | `0.7_taxonomy.R`        | Taxonomy with IDTAXA (GTDB) + SILVA fallback + BLAST rescue  |
+
+---
+
+## Quick Start
+
+```bash
+# Clone repository
+git clone https://github.com/timotheqds/Methano-Project-16s-Data-Analysis.git
+cd Methano-Project-16s-Data-Analysis
+
+# Set up environment
+conda env create -f environment.yml
+conda activate methanopipeline
+Rscript scripts/install_r_packages.R
+
+# Configure (sample names, primers) in scripts/0.1_setup.R, then run:
+Rscript scripts/0.1_setup.R
+Rscript scripts/0.2_quality_control.R
+Rscript scripts/0.3_filtering.R
+Rscript scripts/0.4_sequence_table.R
+Rscript scripts/0.5_lulu_curation.R
+Rscript scripts/0.6_otu_clustering.R
+Rscript scripts/0.7_taxonomy.R
+```
+
+**Example configuration (`scripts/0.1_setup.R`)**
+
+```r
+expected_samples <- c("A6S", "B6B", "B10W")  # example
+FWD <- "AACMGGATTAGATACCCKG"   # 799F
+REV <- "ACGTCRTCCMCACCTTCCTC" # 1193R
+```
+
+---
+
+## Step-by-step Explanations
+
+### Step 1 — Environment Setup & Data Preparation (`0.1_setup.R`)
+
+**Goal:** Make sure everything is in the right place and consistent before heavy processing.
+
+* **Inputs:** `data/raw/*.fastq.gz`, `data/metadata.csv`, primer sequences.
+
+* **Actions:**
+
+  * Validate FASTQ naming (e.g., `_R1/_R2` pairs) and file integrity.
+  * Parse metadata; verify all `sample-id`s are present in FASTQs and vice versa.
+  * Create/clean output directories under `data/processed`, `data/results`, `data/step_outputs`, and `logs/steps`.
+  * Initialize logging and write session info (R/Conda versions) for reproducibility.
+
+* **Outputs:** `logs/steps/00_setup.log`, `data/step_outputs/setup/sample_map.tsv`.
+
+* **Tips:** Keep `expected_samples` explicit to catch missing or extra files early.
+
+---
+
+### Step 2 — Quality Control & Primer Removal (`0.2_quality_control.R`)
+
+**Goal:** Remove primers/adapters and assess raw read quality.
+
+* **Inputs:** Paired FASTQs from `data/raw/`.
+* **Actions:**
+
+  * **Cutadapt**: remove forward/reverse primers; optionally anchor to read starts; allow small mismatch rate (e.g., 0.1).
+  * **FastQC**: generate per-sample QC metrics (per-base quality, GC, length dist.).
+  * **MultiQC**: aggregate reports across samples.
+* **Outputs:**
+
+  * Primer-trimmed FASTQs in `data/processed/trimmed/`.
+  * QC reports in `data/results/quality_control/` (FastQC HTMLs, MultiQC summary).
+* **Watch:** Over-trimming (short reads), residual primers (non-anchored matches), and adapter content flags.
+
+---
+
+### Step 3 — Read Filtering & Trimming (`0.3_filtering.R`)
+
+**Goal:** Improve data quality before denoising.
+
+* **Actions (DADA2 `filterAndTrim`)**:
+
+  * Trim low-quality tails by examining per-base quality plots.
+  * Set reasonable thresholds (examples): `maxEE` \~ 2 (R1) / 4 (R2); `truncQ` \~ 2–11; remove `Ns`; `rm.phix=TRUE`.
+  * Dereplicate identical sequences to speed inference.
+* **Optional abundance screens** (applied later if preferred):
+
+  * ≥ 5 reads per sample **and** ≥ 10 total reads across all samples **and** ≥ 0.1% relative abundance.
+* **Outputs:** Filtered FASTQs in `data/processed/filtered/`, summary `data/step_outputs/filtering/read_retention.tsv`.
+* **Watch:** Don’t truncate so aggressively that read-pair overlap becomes impossible (see next step).
+
+---
+
+### Step 4 — Sequence Table Construction & Denoising (`0.4_sequence_table.R`)
+
+**Goal:** Infer high-resolution ASVs and remove artifacts.
+
+* **Actions:**
+
+  * Learn error models per direction (`learnErrors`).
+  * Infer ASVs per sample (`dada`).
+  * **Merge paired reads** where possible (`mergePairs`).
+  * Remove chimeras (`removeBimeraDenovo`).
+  * Construct the **ASV table** (samples × ASVs).
+* **Automatic fallback:** If the **merge success rate < 10%**, the pipeline switches to **forward-reads-only**. This typically retains \~97% of reads and captures V5–V6 (\~250 bp) with adequate taxonomic resolution.
+* **Outputs:**
+
+  * `data/processed/asv/seqtab.rds`, `data/results/ASV_table.csv` (or `ASV_table_curated.csv` after LULU), chimera/retention stats.
+* **Watch:** Extremely low overlap with 2×250 bp runs of \~400+ bp amplicons; consider 2×300 bp, alternative primer sets (e.g., 515F–806R), or long-read sequencing.
+
+---
+
+### Step 5 — LULU Post-clustering Curation (`0.5_lulu_curation.R`)
+
+**Goal:** Reduce spurious ASVs by exploiting co-occurrence and sequence similarity.
+
+* **Actions:**
+
+  * Build a **matchlist** (via BLAST or vsearch) of close ASV sequences.
+  * Run **LULU** first with conservative thresholds, then with relaxed thresholds.
+  * Compare curated vs. uncurated tables; track collapsed ASVs.
+* **Outputs:** `data/results/ASV_table_curated.csv`, curation report, matchlist artifact files.
+* **Watch:** Over-aggressive curation can merge genuine ecological variants—inspect per-sample effects.
+
+---
+
+### Step 6 — OTU Clustering with Swarm (`0.6_otu_clustering.R`)
+
+**Goal:** Complement ASV view with OTU-level groupings.
+
+* **Actions:**
+
+  * Cluster ASVs using **Swarm** (e.g., d=1) to produce OTUs.
+  * Generate **OTU table** and mapping from ASV→OTU.
+  * Compare alpha/beta diversity from ASVs vs. OTUs.
+* **Outputs:** `data/results/OTU_table.csv`, `data/step_outputs/swarm/`.
+* **Watch:** Swarm parameters (d) strongly affect richness; document chosen value in logs.
+
+---
+
+### Step 7 — Taxonomic Assignment (`0.7_taxonomy.R`)
+
+**Goal:** Assign taxonomy to ASVs/OTUs using robust references.
+
+* **Actions:**
+
+  * **IDTAXA (DECIPHER)** with **GTDB** training set as primary.
+  * **SILVA fallback** for sequences unclassified with GTDB.
+  * **BLAST+ rescue** for any sequences still unclassified.
+  * Report confidence/support per rank (domain→species), and success rates.
+* **Outputs:** `data/results/taxonomy_assignment_gtdb.csv` (plus SILVA- and BLAST-enhanced table), per-rank summaries.
+* **Watch:** Keep GTDB/SILVA versions pinned; note bootstrap thresholds used.
+
+---
+
+## Required Configuration
+
+Edit `scripts/0.1_setup.R`:
+
+```r
+expected_samples <- c("SAMPLE1", "SAMPLE2", "SAMPLE3")
+FWD <- "AACMGGATTAGATACCCKG"  # 799F primer
+REV <- "ACGTCRTCCMCACCTTCCTC"  # 1193R primer
+```
+
+Optional abundance filters (apply during/after Step 4):
+
+* **Per-sample minimum:** ≥ 5 reads
+* **Global minimum:** ≥ 10 reads total
+* **Relative abundance:** ≥ 0.1%
+
+---
+
+## Key Outputs (summary)
+
+* `data/results/ASV_table_curated.csv` – curated ASV abundance table
+* `data/results/OTU_table.csv` – OTU abundance table (if clustering run)
+* `data/results/taxonomy_assignment_gtdb.csv` – taxonomy results (with SILVA + BLAST fallback)
+* `logs/steps/` – detailed logs for reproducibility
+
+---
+
+## Notes & Best Practices
+
+* **Automatic forward-only fallback** if paired-end merging success < 10%, typically retaining \~97% of reads (V5–V6, \~250 bp).
+* **Merging challenges:** For \~400 bp amplicons with 2×250 bp reads, consider **2×300 bp**, alternative **515F–806R** primer set, or **long-read** platforms.
+* **Reproducibility:** Pin database/tool versions; commit `sessionInfo()` and `conda env export` snapshots.
+* **Resumability:** Each step writes checkpoints; you can rerun from any step without re-processing earlier outputs.
+
+---
+
+## Documentation
+
+* `INSTALL.md` – Installation instructions
+* `CONFIGURATION.md` – Customization & setup
+* `docs/troubleshooting.md` – Common issues and fixes
+
+---
+
+## Attribution
+
+Built on concepts from **SimpleMetaPipeline** with customizations for tree-associated microbiomes (soil, bark, wood).

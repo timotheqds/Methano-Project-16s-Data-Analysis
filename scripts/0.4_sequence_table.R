@@ -39,13 +39,40 @@ cat("✓ Denoising completed\n")
 
 # Merge paired reads  
 cat("\n=== Merging Paired Reads ===\n")
-mergers <- mergePairs(dadaFs, fnFs_filt, dadaRs, fnRs_filt, verbose = TRUE)
+# Use more permissive merging parameters to increase merge rate
+mergers <- mergePairs(dadaFs, fnFs_filt, dadaRs, fnRs_filt, 
+                     minOverlap = 12,      # Minimum overlap (default 20)
+                     maxMismatch = 2,      # Allow more mismatches (default 0)
+                     trimOverhang = TRUE,  # Trim overhangs
+                     verbose = TRUE)
 
-cat("✓ Read merging completed\n")
+# Check merge success rate
+total_denoised <- sum(sapply(dadaFs, function(x) sum(getUniques(x))))
+total_merged <- sum(sapply(mergers, function(x) sum(getUniques(x))))
+merge_rate <- total_merged / total_denoised * 100
 
-# Construct sequence table
-cat("\n=== Constructing Sequence Table ===\n")
-seqtab <- makeSequenceTable(mergers)
+cat("Merge success rate:", round(merge_rate, 1), "%\n")
+
+# If merging fails badly (< 10%), use forward reads only
+if(merge_rate < 10) {
+  cat("⚠️  Low merge rate detected. Using FORWARD READS ONLY approach.\n")
+  cat("This is common for long amplicons (799F-1193R ~394bp) with standard sequencing.\n")
+  
+  # Create sequence table from forward reads only
+  seqtab <- makeSequenceTable(dadaFs)
+  cat("✓ Forward-reads-only sequence table created\n")
+  
+  # Create mock mergers for tracking (using forward reads)
+  mergers_for_tracking <- dadaFs
+  
+} else {
+  cat("✓ Read merging completed successfully\n")
+  
+  # Construct sequence table from merged reads
+  cat("\n=== Constructing Sequence Table ===\n")
+  seqtab <- makeSequenceTable(mergers)
+  mergers_for_tracking <- mergers
+}
 cat("Sequence table dimensions:", dim(seqtab), "\n")
 cat("  Samples:", nrow(seqtab), "\n")
 cat("  ASVs:", ncol(seqtab), "\n")
@@ -72,7 +99,7 @@ track <- cbind(
   filtering_results$filtering_results[, "reads.out"],
   sapply(dadaFs, getN),
   sapply(dadaRs, getN), 
-  sapply(mergers, getN),
+  sapply(mergers_for_tracking, getN),
   rowSums(seqtab_nochim)
 )
 

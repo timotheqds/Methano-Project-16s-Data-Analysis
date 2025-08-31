@@ -1,0 +1,32 @@
+name: methanopipeline
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+
+dependencies:
+  # Core
+  - python=3.9
+  - r-base=4.3.*
+
+  # QC + preprocessing
+  - cutadapt=4.4
+  - fastqc=0.12.*
+  - multiqc=1.21
+
+  # Clustering + taxonomy support
+  - swarm=3.1.6
+  - vsearch=2.28.*
+  - blast=2.15.*
+
+  # Core R packages (bioconductor)
+  - bioconductor-dada2=1.30.*
+  - bioconductor-decipher=2.30.*
+  - bioconductor-phyloseq=1.46.*
+  - r-tidyverse
+  - r-optparse
+
+  # Pip installs
+  - pip
+  - pip:
+      - lulu==0.1.0

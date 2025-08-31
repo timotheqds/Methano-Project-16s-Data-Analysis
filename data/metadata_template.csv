@@ -1,0 +1,13 @@
+sample_id,sample_type,tree_id,description
+A16,Wood,A16,Wood sample from tree A16
+A16B,Bark,A16,Bark sample from tree A16
+A16S,Soil,A16,Soil sample from tree A16
+A19,Wood,A19,Wood sample from tree A19
+A19B,Bark,A19,Bark sample from tree A19
+A19S,Soil,A19,Soil sample from tree A19
+B6,Wood,B6,Wood sample from tree B6
+B6B,Bark,B6,Bark sample from tree B6
+B6S,Soil,B6,Soil sample from tree B6
+B10,Wood,B10,Wood sample from tree B10
+B10B,Bark,B10,Bark sample from tree B10
+B10S,Soil,B10,Soil sample from tree B10
