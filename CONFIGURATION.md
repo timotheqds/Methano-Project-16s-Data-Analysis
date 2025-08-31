@@ -96,19 +96,6 @@ truncLen = c(250, 200)
 DesiredSequenceLengthRange = c(240, 260)
 ```
 
-### Example 2: Marine Samples
-```r
-# Sample names  
-expected_samples <- c("Marine_1", "Marine_2", "Marine_3")
-
-# V3-V4 primers
-FWD <- "CCTACGGGNGGCWGCAG"    # 341F
-REV <- "GACTACHVGGGTATCTAATCC"  # 785R
-
-# Parameters for V3-V4 region
-truncLen = c(280, 200)
-DesiredSequenceLengthRange = c(400, 460)
-```
 
 ## Validation Checklist
 
